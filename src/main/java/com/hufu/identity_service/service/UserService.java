@@ -30,6 +30,9 @@ public class UserService {
         if (userRepository.existsByUsername(user.getUsername()))
             throw new AppException(ErrorCode.USER_EXISTED);
 
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
