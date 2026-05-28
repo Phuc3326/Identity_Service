@@ -4,6 +4,7 @@ import com.hufu.identity_service.dto.request.UserCreationRequest;
 import com.hufu.identity_service.dto.request.UserUpdateRequest;
 import com.hufu.identity_service.dto.response.UserResponse;
 import com.hufu.identity_service.entity.User;
+import com.hufu.identity_service.enums.Role;
 import com.hufu.identity_service.exception.AppException;
 import com.hufu.identity_service.exception.ErrorCode;
 import com.hufu.identity_service.mapper.UserMapper;
@@ -15,7 +16,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +26,7 @@ import java.util.List;
 public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
+    PasswordEncoder passwordEncoder;
 
     public UserResponse createUser(UserCreationRequest request) {
         User user = userMapper.toUser(request);
@@ -30,8 +34,11 @@ public class UserService {
         if (userRepository.existsByUsername(user.getUsername()))
             throw new AppException(ErrorCode.USER_EXISTED);
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        Set<String> roles = new HashSet<>();
+        roles.add(Role.USER.name());
+        user.setRoles(roles);
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
