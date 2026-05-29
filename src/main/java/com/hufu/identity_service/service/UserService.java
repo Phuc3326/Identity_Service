@@ -12,6 +12,10 @@ import com.hufu.identity_service.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -43,17 +47,27 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse getUser(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         return userMapper.toUserResponse(user);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
         return userRepository.findAll()
                 .stream()
                 .map(userMapper::toUserResponse)
                 .toList();
+    }
+
+    public UserResponse getMyInfo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        assert authentication != null;
+        User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        return userMapper.toUserResponse(user);
     }
 
     public UserResponse updateUser(String id, UserUpdateRequest request) {
