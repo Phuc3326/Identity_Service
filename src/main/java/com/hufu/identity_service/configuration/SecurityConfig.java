@@ -34,6 +34,7 @@ public class SecurityConfig {
                         oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter())
                         )
+                                .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
                 )
                 .authorizeHttpRequests(request ->
                         request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
