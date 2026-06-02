@@ -3,20 +3,20 @@ package com.hufu.identity_service.service;
 import com.hufu.identity_service.dto.request.UserCreationRequest;
 import com.hufu.identity_service.dto.request.UserUpdateRequest;
 import com.hufu.identity_service.dto.response.UserResponse;
+import com.hufu.identity_service.entity.Role;
 import com.hufu.identity_service.entity.User;
-import com.hufu.identity_service.enums.Role;
+import com.hufu.identity_service.enums.RoleEnum;
 import com.hufu.identity_service.exception.AppException;
 import com.hufu.identity_service.exception.ErrorCode;
 import com.hufu.identity_service.mapper.UserMapper;
+import com.hufu.identity_service.repository.RoleRepository;
 import com.hufu.identity_service.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +29,7 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
     UserRepository userRepository;
+    RoleRepository roleRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
 
@@ -40,8 +41,10 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        Set<String> roles = new HashSet<>();
-        roles.add(Role.USER.name());
+        Set<Role> roles = new HashSet<>();
+        Role role = roleRepository.findById(RoleEnum.USER.name())
+                .orElseThrow(()-> new AppException(ErrorCode.ROLE_NOT_EXISTED));
+        roles.add(role);
         user.setRoles(roles);
 
         return userMapper.toUserResponse(userRepository.save(user));
@@ -73,6 +76,11 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         User updatedUser = userMapper.updateUser(user, request);
+
+        updatedUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        List<Role> roles = roleRepository.findAllById(request.getRoles());
+        updatedUser.setRoles(new HashSet<>(roles));
+
         return userMapper.toUserResponse(userRepository.save(updatedUser));
     }
 
