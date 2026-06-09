@@ -3,6 +3,7 @@ package com.hufu.identity_service.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 @Data
@@ -15,6 +16,6 @@ public class UserResponse {
     String username;
     String firstName;
     String lastName;
-    String dob;
+    LocalDate dob;
     Set<RoleResponse> roles;
 }

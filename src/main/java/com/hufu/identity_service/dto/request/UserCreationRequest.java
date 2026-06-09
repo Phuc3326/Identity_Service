@@ -1,8 +1,11 @@
 package com.hufu.identity_service.dto.request;
 
+import com.hufu.identity_service.validator.DobConstraint;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -16,5 +19,7 @@ public class UserCreationRequest {
     String password;
     String firstName;
     String lastName;
-    String dob;
+
+    @DobConstraint(min = 18, message = "INVALID_DOB")
+    LocalDate dob;
 }
