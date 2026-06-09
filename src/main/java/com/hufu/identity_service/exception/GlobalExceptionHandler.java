@@ -2,6 +2,7 @@ package com.hufu.identity_service.exception;
 
 import com.hufu.identity_service.dto.response.ApiResponse;
 import com.nimbusds.jose.JOSEException;
+import jakarta.validation.ConstraintViolation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -9,10 +10,13 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.text.ParseException;
+import java.util.Map;
 import java.util.Objects;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    private static final String MIN_ATTRIBUTE = "min";
+
     @ExceptionHandler(value = AppException.class)
     ResponseEntity<ApiResponse<?>> HandlingAppException(AppException exception) {
         ErrorCode errorCode = exception.getErrorCode();
@@ -28,16 +32,29 @@ public class GlobalExceptionHandler {
         String errorKey = Objects.requireNonNull(exception.getFieldError()).getDefaultMessage();
 
         ErrorCode errorCode = ErrorCode.INVALID_KEY;
+        String message = errorCode.getMessage();
         try {
             errorCode = ErrorCode.valueOf(errorKey);
+
+            ConstraintViolation<?> constraintViolation = exception.getBindingResult()
+                    .getAllErrors().getFirst().unwrap(ConstraintViolation.class);
+            Map<String, Object> attributes = constraintViolation.getConstraintDescriptor()
+                    .getAttributes();
+
+            message = mapAttributes(errorCode.getMessage(), attributes);
         } catch (IllegalArgumentException ignored) {
         }
 
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .code(errorCode.getCode())
-                .message(errorCode.getMessage())
+                .message(message)
                 .build();
         return ResponseEntity.status(errorCode.getHttpStatusCode()).body(apiResponse);
+    }
+
+    String mapAttributes(String message, Map<String, Object> attributes) {
+        String specific = attributes.get(MIN_ATTRIBUTE).toString();
+        return message.replace("{" + MIN_ATTRIBUTE + "}", specific);
     }
 
     @ExceptionHandler(value = JOSEException.class)
