@@ -45,6 +45,7 @@ public class AuthenticationService {
     String SIGNER_KEY;
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) throws JOSEException {
+        // Authenticate
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
@@ -52,6 +53,7 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
 
+        // Create token
         String token = generateToken(user);
 
         return AuthenticationResponse.builder()
