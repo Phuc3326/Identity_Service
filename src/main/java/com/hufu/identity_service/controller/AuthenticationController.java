@@ -2,6 +2,7 @@ package com.hufu.identity_service.controller;
 
 import com.hufu.identity_service.dto.request.AuthenticationRequest;
 import com.hufu.identity_service.dto.request.IntrospectRequest;
+import com.hufu.identity_service.dto.request.LogoutRequest;
 import com.hufu.identity_service.dto.response.ApiResponse;
 import com.hufu.identity_service.dto.response.AuthenticationResponse;
 import com.hufu.identity_service.dto.response.IntrospectResponse;
@@ -36,6 +37,15 @@ public class AuthenticationController {
             throws JOSEException, ParseException {
         return ApiResponse.<IntrospectResponse>builder()
                 .result(authenticationService.introspect(request))
+                .build();
+    }
+
+    @PostMapping("/logout")
+    ApiResponse<String> logout(@RequestBody LogoutRequest request)
+            throws JOSEException, ParseException {
+        authenticationService.logout(request);
+        return ApiResponse.<String>builder()
+                .result("Logout successfully!")
                 .build();
     }
 }
