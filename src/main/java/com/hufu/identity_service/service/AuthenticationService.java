@@ -3,6 +3,7 @@ package com.hufu.identity_service.service;
 import com.hufu.identity_service.dto.request.AuthenticationRequest;
 import com.hufu.identity_service.dto.request.IntrospectRequest;
 import com.hufu.identity_service.dto.request.LogoutRequest;
+import com.hufu.identity_service.dto.request.RefreshRequest;
 import com.hufu.identity_service.dto.response.AuthenticationResponse;
 import com.hufu.identity_service.dto.response.IntrospectResponse;
 import com.hufu.identity_service.entity.InvalidatedToken;
@@ -55,7 +56,6 @@ public class AuthenticationService {
 
         // Create token
         String token = generateToken(user);
-
         return AuthenticationResponse.builder()
                 .token(token)
                 .build();
@@ -144,6 +144,36 @@ public class AuthenticationService {
                 .build();
 
         invalidatedTokenRepository.save(invalidatedToken);
+    }
+
+    public AuthenticationResponse refreshToken (RefreshRequest request)
+            throws ParseException, JOSEException {
+        SignedJWT signedJWT = SignedJWT.parse(request.getToken());
+
+        if (isNotValidSignature(signedJWT)) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+        if (isExpired(signedJWT.getJWTClaimsSet().getExpirationTime())) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+        if (isLoggedOut(signedJWT.getJWTClaimsSet().getJWTID())) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                .id(signedJWT.getJWTClaimsSet().getJWTID())
+                .expiry(signedJWT.getJWTClaimsSet().getExpirationTime())
+                .build();
+        invalidatedTokenRepository.save(invalidatedToken);
+
+        String username = signedJWT.getJWTClaimsSet().getSubject();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
+
+        String token = generateToken(user);
+        return AuthenticationResponse.builder()
+                .token(token)
+                .build();
     }
 
     private boolean isNotValidSignature(SignedJWT signedJWT) throws JOSEException {
