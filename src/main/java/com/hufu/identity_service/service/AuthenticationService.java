@@ -45,6 +45,14 @@ public class AuthenticationService {
     @Value("${jwt.signerKey}")
     String SIGNER_KEY;
 
+    @NonFinal
+    @Value("${jwt.expirationTime}")
+    int EXPIRATION_TIME;
+
+    @NonFinal
+    @Value("${jwt.refreshableTime}")
+    int REFRESHABLE_TIME;
+
     public AuthenticationResponse authenticate(AuthenticationRequest request) throws JOSEException {
         // Authenticate
         User user = userRepository.findByUsername(request.getUsername())
@@ -69,7 +77,7 @@ public class AuthenticationService {
                 .issuer("hufu.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(
-                        Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
+                        Instant.now().plus(EXPIRATION_TIME, ChronoUnit.SECONDS).toEpochMilli()
                 ))
                 .jwtID(java.util.UUID.randomUUID().toString())
                 .claim("scope", buildScope(user))
@@ -130,7 +138,9 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
 
-        if (isExpired(signedJWT.getJWTClaimsSet().getExpirationTime())) {
+        Date refreshExpiration = new Date(signedJWT.getJWTClaimsSet().getIssueTime()
+                .toInstant().plus(REFRESHABLE_TIME, ChronoUnit.SECONDS).toEpochMilli());
+        if (isExpired(refreshExpiration)) {
             return;
         }
 
@@ -140,7 +150,7 @@ public class AuthenticationService {
 
         InvalidatedToken invalidatedToken = InvalidatedToken.builder()
                 .id(signedJWT.getJWTClaimsSet().getJWTID())
-                .expiry(signedJWT.getJWTClaimsSet().getExpirationTime())
+                .expiry(refreshExpiration)
                 .build();
 
         invalidatedTokenRepository.save(invalidatedToken);
@@ -153,16 +163,20 @@ public class AuthenticationService {
         if (isNotValidSignature(signedJWT)) {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
-        if (isExpired(signedJWT.getJWTClaimsSet().getExpirationTime())) {
+
+        Date refreshExpiration = new Date(signedJWT.getJWTClaimsSet().getIssueTime()
+                .toInstant().plus(REFRESHABLE_TIME, ChronoUnit.SECONDS).toEpochMilli());
+        if (isExpired(refreshExpiration)) {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
+
         if (isLoggedOut(signedJWT.getJWTClaimsSet().getJWTID())) {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
 
         InvalidatedToken invalidatedToken = InvalidatedToken.builder()
                 .id(signedJWT.getJWTClaimsSet().getJWTID())
-                .expiry(signedJWT.getJWTClaimsSet().getExpirationTime())
+                .expiry(refreshExpiration)
                 .build();
         invalidatedTokenRepository.save(invalidatedToken);
 
