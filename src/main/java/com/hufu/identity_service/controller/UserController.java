@@ -24,7 +24,7 @@ import java.util.List;
 @RequestMapping("/users")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
-class UserController {
+public class UserController {
     UserService userService;
 
     @PostMapping
