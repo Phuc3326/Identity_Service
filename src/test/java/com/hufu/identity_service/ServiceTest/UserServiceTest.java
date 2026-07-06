@@ -1,4 +1,4 @@
-package com.hufu.identity_service.ControllerTest;
+package com.hufu.identity_service.ServiceTest;
 
 import com.hufu.identity_service.dto.request.UserCreationRequest;
 import com.hufu.identity_service.dto.response.UserResponse;
@@ -7,7 +7,6 @@ import com.hufu.identity_service.entity.Role;
 import com.hufu.identity_service.entity.User;
 import com.hufu.identity_service.exception.AppException;
 import com.hufu.identity_service.exception.ErrorCode;
-import com.hufu.identity_service.mapper.UserMapper;
 import com.hufu.identity_service.repository.RoleRepository;
 import com.hufu.identity_service.repository.UserRepository;
 import com.hufu.identity_service.service.UserService;
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import java.util.Optional;
 
@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@TestPropertySource("/test.properties")
 public class UserServiceTest {
     @Autowired
     UserService userService;

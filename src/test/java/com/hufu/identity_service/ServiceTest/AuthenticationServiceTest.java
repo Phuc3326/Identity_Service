@@ -1,4 +1,4 @@
-package com.hufu.identity_service.ControllerTest;
+package com.hufu.identity_service.ServiceTest;
 
 import com.hufu.identity_service.dto.request.AuthenticationRequest;
 import com.hufu.identity_service.dto.response.AuthenticationResponse;
