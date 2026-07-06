@@ -107,36 +107,7 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.jetbrains.kotlin</groupId>
-				<artifactId>kotlin-maven-plugin</artifactId>
-				<version>${kotlin.version}</version>
-				<executions>
-					<execution>
-						<id>compile</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-						<configuration>
-							<sourceDirs>
-								<sourceDir>src/main/java</sourceDir>
-								<sourceDir>target/generated-sources/annotations</sourceDir>
-							</sourceDirs>
-						</configuration>
-					</execution>
-					<execution>
-						<id>test-compile</id>
-						<phase>test-compile</phase>
-						<goals>
-							<goal>test-compile</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<jvmTarget>1.8</jvmTarget>
-				</configuration>
-			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -200,6 +171,40 @@
 					</execution>
 				</executions>
 			</plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <!-- Sử dụng version 0.8.12 (hoặc mới nhất) để hỗ trợ tốt Java 21 -->
+                <version>0.8.12</version>
+                <executions>
+                    <!-- Gắn agent của JaCoCo vào quá trình chạy Test -->
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <!-- Tạo báo cáo sau khi test xong -->
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase> <!-- Báo cáo sẽ được sinh ra ngay sau phase test -->
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!-- (Tùy chọn) Loại bỏ các class không cần tính coverage -->
+                    <excludes>
+                        <exclude>com/hufu/identity_service/configuration/**</exclude>
+						<exclude>com/hufu/identity_service/dto/**</exclude>
+						<exclude>com/hufu/identity_service/entity/**</exclude>
+						<exclude>com/hufu/identity_service/enums/**</exclude>
+						<exclude>com/hufu/identity_service/exception/**</exclude>
+						<exclude>com/hufu/identity_service/mapper/**</exclude>
+					</excludes>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 </project>
