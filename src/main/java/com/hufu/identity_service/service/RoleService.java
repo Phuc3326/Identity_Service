@@ -1,22 +1,18 @@
 package com.hufu.identity_service.service;
 
-import com.hufu.identity_service.dto.request.PermissionRequest;
 import com.hufu.identity_service.dto.request.RoleRequest;
-import com.hufu.identity_service.dto.response.PermissionResponse;
 import com.hufu.identity_service.dto.response.RoleResponse;
 import com.hufu.identity_service.entity.Permission;
 import com.hufu.identity_service.entity.Role;
-import com.hufu.identity_service.mapper.PermissionMapper;
 import com.hufu.identity_service.mapper.RoleMapper;
 import com.hufu.identity_service.repository.PermissionRepository;
 import com.hufu.identity_service.repository.RoleRepository;
+import java.util.HashSet;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +30,7 @@ public class RoleService {
     }
 
     public List<RoleResponse> getAll() {
-        return roleRepository.findAll()
-                .stream()
-                .map(roleMapper::toRoleResponse)
-                .toList();
+        return roleRepository.findAll().stream().map(roleMapper::toRoleResponse).toList();
     }
 
     public void delete(String role) {

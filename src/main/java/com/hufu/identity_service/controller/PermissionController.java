@@ -4,14 +4,12 @@ import com.hufu.identity_service.dto.request.PermissionRequest;
 import com.hufu.identity_service.dto.response.ApiResponse;
 import com.hufu.identity_service.dto.response.PermissionResponse;
 import com.hufu.identity_service.service.PermissionService;
+import java.util.List;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -38,8 +36,6 @@ public class PermissionController {
     @DeleteMapping("/{permission}")
     ApiResponse<String> delete(@PathVariable String permission) {
         permissionService.delete(permission);
-        return ApiResponse.<String>builder()
-                .result("Permission has been deleted")
-                .build();
+        return ApiResponse.<String>builder().result("Permission has been deleted").build();
     }
 }

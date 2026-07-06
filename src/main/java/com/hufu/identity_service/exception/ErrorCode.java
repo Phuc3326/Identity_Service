@@ -1,6 +1,5 @@
 package com.hufu.identity_service.exception;
 
-import ch.qos.logback.core.model.INamedModel;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,12 +18,12 @@ public enum ErrorCode {
     USERNAME_INVALID(1005, "USERNAME MUST BE AT LEAST {min} CHARACTERS", HttpStatus.BAD_REQUEST),
     PASSWORD_INVALID(1006, "PASSWORD MUST BE AT LEAST {min} CHARACTERS", HttpStatus.BAD_REQUEST),
     INVALID_TOKEN_FORMAT(1008, "INVALID TOKEN FORMAT", HttpStatus.BAD_REQUEST),
-    TOKEN_SIGNING_FAILED(1009, "TOKEN ENCRYPTION OR SIGNING FAILED", HttpStatus.INTERNAL_SERVER_ERROR),
+    TOKEN_SIGNING_FAILED(
+            1009, "TOKEN ENCRYPTION OR SIGNING FAILED", HttpStatus.INTERNAL_SERVER_ERROR),
     UNAUTHENTICATED(1007, "UNAUTHENTICATED", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1008, "YOU DO NOT HAVE PERMISSION", HttpStatus.FORBIDDEN),
     ROLE_NOT_EXISTED(1010, "ROLE NOT FOUND", HttpStatus.NOT_FOUND),
-    INVALID_DOB(1011, "YOU HAVE TO BE AT LEAST {min} YEARS OLD", HttpStatus.BAD_REQUEST)
-    ;
+    INVALID_DOB(1011, "YOU HAVE TO BE AT LEAST {min} YEARS OLD", HttpStatus.BAD_REQUEST);
 
     int code;
     String message;

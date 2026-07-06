@@ -5,12 +5,11 @@ import com.hufu.identity_service.dto.response.PermissionResponse;
 import com.hufu.identity_service.entity.Permission;
 import com.hufu.identity_service.mapper.PermissionMapper;
 import com.hufu.identity_service.repository.PermissionRepository;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +24,7 @@ public class PermissionService {
     }
 
     public List<PermissionResponse> getAll() {
-        return permissionRepository.findAll()
-                .stream()
+        return permissionRepository.findAll().stream()
                 .map(permissionMapper::toPermissionResponse)
                 .toList();
     }

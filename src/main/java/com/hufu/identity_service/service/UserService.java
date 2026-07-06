@@ -11,6 +11,9 @@ import com.hufu.identity_service.exception.ErrorCode;
 import com.hufu.identity_service.mapper.UserMapper;
 import com.hufu.identity_service.repository.RoleRepository;
 import com.hufu.identity_service.repository.UserRepository;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -19,10 +22,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -42,8 +41,10 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         Set<Role> roles = new HashSet<>();
-        Role role = roleRepository.findById(RoleEnum.USER.name())
-                .orElseThrow(()-> new AppException(ErrorCode.ROLE_NOT_EXISTED));
+        Role role =
+                roleRepository
+                        .findById(RoleEnum.USER.name())
+                        .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED));
         roles.add(role);
         user.setRoles(roles);
 
@@ -52,29 +53,32 @@ public class UserService {
 
     @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse getUser(String id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        User user =
+                userRepository
+                        .findById(id)
+                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         return userMapper.toUserResponse(user);
     }
 
     public List<UserResponse> getUsers() {
-        return userRepository.findAll()
-                .stream()
-                .map(userMapper::toUserResponse)
-                .toList();
+        return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
     }
 
     public UserResponse getMyInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         assert authentication != null;
-        User user = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        User user =
+                userRepository
+                        .findByUsername(authentication.getName())
+                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         return userMapper.toUserResponse(user);
     }
 
     public UserResponse updateUser(String id, UserUpdateRequest request) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        User user =
+                userRepository
+                        .findById(id)
+                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         User updatedUser = userMapper.updateUser(user, request);
 
         updatedUser.setPassword(passwordEncoder.encode(request.getPassword()));
