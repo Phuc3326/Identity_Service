@@ -41,15 +41,15 @@ public class AuthenticationService {
 
     @NonFinal
     @Value("${jwt.signerKey}")
-    String SIGNER_KEY;
+    String signerKey;
 
     @NonFinal
     @Value("${jwt.expirationTime}")
-    int EXPIRATION_TIME;
+    int expirationTime;
 
     @NonFinal
     @Value("${jwt.refreshableTime}")
-    int REFRESHABLE_TIME;
+    int refreshableTime;
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) throws JOSEException {
         // Authenticate
@@ -78,7 +78,7 @@ public class AuthenticationService {
                         .expirationTime(
                                 new Date(
                                         Instant.now()
-                                                .plus(EXPIRATION_TIME, ChronoUnit.SECONDS)
+                                                .plus(expirationTime, ChronoUnit.SECONDS)
                                                 .toEpochMilli()))
                         .jwtID(java.util.UUID.randomUUID().toString())
                         .claim("scope", buildScope(user))
@@ -88,7 +88,7 @@ public class AuthenticationService {
 
         JWSObject jwsObject = new JWSObject(header, payload);
 
-        jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
+        jwsObject.sign(new MACSigner(signerKey.getBytes()));
 
         return jwsObject.serialize();
     }
@@ -102,9 +102,8 @@ public class AuthenticationService {
                                 stringJoiner.add("ROLE_" + role.getName());
                                 role.getPermissions()
                                         .forEach(
-                                                permission -> {
-                                                    stringJoiner.add(permission.getName());
-                                                });
+                                                permission ->
+                                                        stringJoiner.add(permission.getName()));
                             });
         }
 
@@ -143,7 +142,7 @@ public class AuthenticationService {
                                 .getJWTClaimsSet()
                                 .getIssueTime()
                                 .toInstant()
-                                .plus(REFRESHABLE_TIME, ChronoUnit.SECONDS)
+                                .plus(refreshableTime, ChronoUnit.SECONDS)
                                 .toEpochMilli());
         if (isExpired(refreshExpiration)) {
             return;
@@ -176,7 +175,7 @@ public class AuthenticationService {
                                 .getJWTClaimsSet()
                                 .getIssueTime()
                                 .toInstant()
-                                .plus(REFRESHABLE_TIME, ChronoUnit.SECONDS)
+                                .plus(refreshableTime, ChronoUnit.SECONDS)
                                 .toEpochMilli());
         if (isExpired(refreshExpiration)) {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
@@ -204,15 +203,15 @@ public class AuthenticationService {
     }
 
     private boolean isNotValidSignature(SignedJWT signedJWT) throws JOSEException {
-        JWSVerifier jwsVerifier = new MACVerifier(SIGNER_KEY.getBytes());
+        JWSVerifier jwsVerifier = new MACVerifier(signerKey.getBytes());
         return !signedJWT.verify(jwsVerifier);
     }
 
-    private boolean isExpired(Date expiryTime) throws ParseException {
+    private boolean isExpired(Date expiryTime) {
         return expiryTime.before(new Date());
     }
 
-    public boolean isLoggedOut(String id) throws ParseException {
+    public boolean isLoggedOut(String id) {
         return invalidatedTokenRepository.existsById(id);
     }
 }

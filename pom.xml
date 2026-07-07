@@ -31,6 +31,13 @@
 		<!-- Khai báo version của MapStruct tại đây để dễ quản lý -->
 		<org.mapstruct.version>1.6.3</org.mapstruct.version>
 		<kotlin.version>2.2.20</kotlin.version>
+		<sonar.coverage.exclusions>
+			**/configuration/**,
+			**/dto/**,
+			**/entity/**,
+			**/mapper/**,
+			**/exception/**
+		</sonar.coverage.exclusions>
 	</properties>
 	<dependencies>
 		<dependency>

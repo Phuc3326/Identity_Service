@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
     private static final String MIN_ATTRIBUTE = "min";
 
     @ExceptionHandler(value = AppException.class)
-    ResponseEntity<ApiResponse<?>> HandlingAppException(AppException exception) {
+    ResponseEntity<ApiResponse<?>> handlingAppException(AppException exception) {
         ErrorCode errorCode = exception.getErrorCode();
         ApiResponse<?> apiResponse =
                 ApiResponse.builder()
@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    ResponseEntity<ApiResponse<?>> HandlingMethodArgumentNotValidException(
+    ResponseEntity<ApiResponse<?>> handlingMethodArgumentNotValidException(
             MethodArgumentNotValidException exception) {
         String errorKey = Objects.requireNonNull(exception.getFieldError()).getDefaultMessage();
 
@@ -61,7 +61,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = JOSEException.class)
-    ResponseEntity<ApiResponse<?>> HandlingJOSEException(JOSEException exception) {
+    ResponseEntity<ApiResponse<?>> handlingJOSEException(JOSEException exception) {
         ErrorCode errorCode = ErrorCode.TOKEN_SIGNING_FAILED;
         ApiResponse<?> apiResponse =
                 ApiResponse.builder()
@@ -72,7 +72,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = ParseException.class)
-    ResponseEntity<ApiResponse<?>> HandlingParseException(ParseException exception) {
+    ResponseEntity<ApiResponse<?>> handlingParseException(ParseException exception) {
         ErrorCode errorCode = ErrorCode.INVALID_TOKEN_FORMAT;
         ApiResponse<?> apiResponse =
                 ApiResponse.builder()
@@ -83,7 +83,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = AccessDeniedException.class)
-    ResponseEntity<ApiResponse<?>> HandlingAccessDeniedException(AccessDeniedException exception) {
+    ResponseEntity<ApiResponse<?>> handlingAccessDeniedException(AccessDeniedException exception) {
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
         ApiResponse<?> apiResponse =
                 ApiResponse.builder()
@@ -94,7 +94,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = Exception.class)
-    ResponseEntity<ApiResponse<?>> HandlingException(Exception exception) {
+    ResponseEntity<ApiResponse<?>> handlingException(Exception exception) {
         ErrorCode errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
         ApiResponse<?> apiResponse =
                 ApiResponse.builder()

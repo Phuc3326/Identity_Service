@@ -22,7 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthenticationServiceTest {
+class AuthenticationServiceTest {
     @InjectMocks AuthenticationService authenticationService;
 
     @Mock UserRepository userRepository;
@@ -39,9 +39,9 @@ public class AuthenticationServiceTest {
 
         ReflectionTestUtils.setField(
                 authenticationService,
-                "SIGNER_KEY",
+                "signerKey",
                 "22d14ba61b98c7499371c1838b0c896e5afa40b676ec5e8e4dad58938ed06283");
-        ReflectionTestUtils.setField(authenticationService, "EXPIRATION_TIME", 20);
+        ReflectionTestUtils.setField(authenticationService, "expirationTime", 20);
     }
 
     @Test

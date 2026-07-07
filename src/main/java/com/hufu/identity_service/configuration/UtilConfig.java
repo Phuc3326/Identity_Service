@@ -12,7 +12,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 @Configuration
 public class UtilConfig {
     @Value("${jwt.signerKey}")
-    private String SIGNER_KEY;
+    private String signerKey;
 
     @Bean
     PasswordEncoder passwordEncoder() {
@@ -21,7 +21,7 @@ public class UtilConfig {
 
     @Bean
     NimbusJwtDecoder jwtDecoder() {
-        SecretKeySpec secretKeySpec = new SecretKeySpec(SIGNER_KEY.getBytes(), "HS512");
+        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
         //        Turn off the Clock Skew mechanism by setting the grace period to ZERO
         //        OAuth2TokenValidator<Jwt> jwtValidator = new JwtTimestampValidator(Duration.ZERO);
         //        nimbusJwtDecoder.setJwtValidator(jwtValidator);

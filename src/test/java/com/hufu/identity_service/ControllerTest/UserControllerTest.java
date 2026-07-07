@@ -11,6 +11,7 @@ import com.hufu.identity_service.dto.response.RoleResponse;
 import com.hufu.identity_service.dto.response.UserResponse;
 import com.hufu.identity_service.service.UserService;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
 @WebMvcTest(UserController.class)
-public class UserControllerTest {
+class UserControllerTest {
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
 
@@ -41,7 +42,7 @@ public class UserControllerTest {
                         .password("12345678")
                         .firstName("John")
                         .lastName("Holly")
-                        .dob(LocalDate.of(2000, 1, 1))
+                        .dob(LocalDate.of(2000, Month.JANUARY, 1))
                         .build();
 
         PermissionResponse permission =
@@ -67,7 +68,7 @@ public class UserControllerTest {
                         .username("JohnHolly")
                         .firstName("John")
                         .lastName("Holly")
-                        .dob(LocalDate.of(2000, 1, 1))
+                        .dob(LocalDate.of(2000, Month.JANUARY, 1))
                         .roles(roles)
                         .build();
     }

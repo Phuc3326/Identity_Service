@@ -14,6 +14,7 @@ import com.hufu.identity_service.repository.RoleRepository;
 import com.hufu.identity_service.repository.UserRepository;
 import com.hufu.identity_service.service.UserService;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +30,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @SpringBootTest
 @ActiveProfiles("test")
 @TestPropertySource("/test.properties")
-public class UserServiceTest {
+class UserServiceTest {
     @Autowired UserService userService;
 
     @Autowired PasswordEncoder passwordEncoder;
@@ -49,7 +50,7 @@ public class UserServiceTest {
                         .password("12345678")
                         .firstName("John")
                         .lastName("Holly")
-                        .dob(LocalDate.of(2000, 1, 1))
+                        .dob(LocalDate.of(2000, Month.JANUARY, 1))
                         .build();
 
         Permission permission =
@@ -72,7 +73,7 @@ public class UserServiceTest {
                         .password(passwordEncoder.encode("12345678"))
                         .firstName("John")
                         .lastName("Holly")
-                        .dob(LocalDate.of(2000, 1, 1))
+                        .dob(LocalDate.of(2000, Month.JANUARY, 1))
                         .roles(Set.of(userRole))
                         .build();
     }

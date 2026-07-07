@@ -1,7 +1,6 @@
 package com.hufu.identity_service.configuration;
 
 import com.hufu.identity_service.service.AuthenticationService;
-import java.text.ParseException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,7 +24,7 @@ public class CustomJwtDecoder implements JwtDecoder {
         try {
             if (authenticationService.isLoggedOut(jwt.getId()))
                 throw new JwtException("You have logged out!");
-        } catch (ParseException e) {
+        } catch (Exception e) {
             throw new JwtException(e.getMessage());
         }
 

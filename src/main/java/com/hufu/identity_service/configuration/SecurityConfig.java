@@ -28,12 +28,12 @@ public class SecurityConfig {
     CustomJwtDecoder customJwtDecoder;
 
     @NonFinal
-    private final String[] PUBLIC_ENDPOINTS = {
+    private static final String[] PUBLIC_ENDPOINTS = {
         "/users", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh"
     };
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity httpSecurity) {
         httpSecurity
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
@@ -68,7 +68,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsFilter corsFilter () {
+    public CorsFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.addAllowedOrigin("http://localhost:3000");
         corsConfiguration.addAllowedMethod("*");
