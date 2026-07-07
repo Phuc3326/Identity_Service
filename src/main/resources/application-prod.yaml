@@ -1,0 +1,3 @@
+jwt:
+  expirationTime: 7200 # seconds
+  refreshableTime: 72000 # seconds
