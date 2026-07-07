@@ -1,0 +1,5 @@
+jacoco (generate test coverage report):.\mvnw jacoco:report
+
+spotless (format code): .\mvnw spotless:apply
+
+sonar qube (check standard code): .\mvnw clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar "-Dsonar.projectKey=hufu.identity_service" "-Dsonar.projectName=hufu.identity_service" "-Dsonar.host.url=http://localhost:9000" "-Dsonar.token=sqp_9eeeea0dc2751a3d255c0f2fa9340b2529efd05d" 

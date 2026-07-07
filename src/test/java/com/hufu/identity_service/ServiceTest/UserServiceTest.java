@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -80,7 +81,6 @@ class UserServiceTest {
 
     @Test
     void createUser_validRequest_Success() {
-        Mockito.when(userRepository.existsByUsername(request.getUsername())).thenReturn(false);
         Mockito.when(roleRepository.findById("USER")).thenReturn(Optional.of(userRole));
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(savedUser);
 
@@ -95,12 +95,14 @@ class UserServiceTest {
 
     @Test
     void createUser_userExisted_Failure() {
-        Mockito.when(userRepository.existsByUsername(request.getUsername())).thenReturn(true);
+        Mockito.when(roleRepository.findById("USER")).thenReturn(Optional.of(userRole));
+        Mockito.when(userRepository.save(Mockito.any(User.class))).thenThrow(
+                new DataIntegrityViolationException("User existed")
+        );
 
         AppException exception =
                 assertThrows(AppException.class, () -> userService.createUser(request));
 
         assertEquals(ErrorCode.USER_EXISTED, exception.getErrorCode());
-        Mockito.verify(userRepository, Mockito.never()).save(Mockito.any(User.class));
     }
 }
