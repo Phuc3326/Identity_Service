@@ -11,3 +11,9 @@ docker create network (create DNS): docker network create hufu-network
 docker run mysql: docker run --network hufu-network --name mysql -p 3307:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=identity_service -d mysql:8.0
 
 docker run identity_service: docker run --name identity-service --network hufu-network -p 8080:8080 -e DBMS_URL=jdbc:mysql://mysql:3306/identity_service -d identity_service:0.0.1
+
+docker build to push (build image): docker build -t phuc3326/identity_service:0.0.1 .
+
+docker push (push to hub): docker image push phuc3326/identity_service:0.0.1
+
+docker pull (pull from hub): docker pull phuc3326/identity_service:0.0.1
