@@ -96,9 +96,8 @@ class UserServiceTest {
     @Test
     void createUser_userExisted_Failure() {
         Mockito.when(roleRepository.findById("USER")).thenReturn(Optional.of(userRole));
-        Mockito.when(userRepository.save(Mockito.any(User.class))).thenThrow(
-                new DataIntegrityViolationException("User existed")
-        );
+        Mockito.when(userRepository.save(Mockito.any(User.class)))
+                .thenThrow(new DataIntegrityViolationException("User existed"));
 
         AppException exception =
                 assertThrows(AppException.class, () -> userService.createUser(request));
