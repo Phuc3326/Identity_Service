@@ -5,12 +5,18 @@ import com.hufu.identity_service.dto.response.ApiResponse;
 import com.hufu.identity_service.dto.response.PermissionResponse;
 import com.hufu.identity_service.service.PermissionService;
 import java.util.List;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(
+        name ="Permission Management",
+        description = "Quản lí thông tin permission"
+)
 @Slf4j
 @RestController
 @RequestMapping("/permission")

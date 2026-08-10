@@ -10,6 +10,8 @@ import com.hufu.identity_service.dto.response.IntrospectResponse;
 import com.hufu.identity_service.service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
 import java.text.ParseException;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,6 +20,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(
+        name ="Authentication",
+        description = "Quản lí thông tin xác thực"
+)
 @RestController
 @RequestMapping("/auth")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
