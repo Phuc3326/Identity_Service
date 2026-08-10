@@ -9,6 +9,7 @@ import java.util.Objects;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -19,6 +20,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = AppException.class)
     ResponseEntity<ApiResponse<?>> handlingAppException(AppException exception) {
         ErrorCode errorCode = exception.getErrorCode();
+        ApiResponse<?> apiResponse =
+                ApiResponse.builder()
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage())
+                        .build();
+        return ResponseEntity.status(errorCode.getHttpStatusCode()).body(apiResponse);
+    }
+
+    @ExceptionHandler(value = NoResourceFoundException.class)
+    ResponseEntity<ApiResponse<?>> handlingNoResourceFoundException(NoResourceFoundException exception) {
+        ErrorCode errorCode = ErrorCode.USER_NOT_EXISTED;
         ApiResponse<?> apiResponse =
                 ApiResponse.builder()
                         .code(errorCode.getCode())

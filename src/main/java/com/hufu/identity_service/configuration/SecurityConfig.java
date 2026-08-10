@@ -28,8 +28,20 @@ public class SecurityConfig {
     CustomJwtDecoder customJwtDecoder;
 
     @NonFinal
-    private static final String[] PUBLIC_ENDPOINTS = {
-        "/users", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh"
+    private static final String[] PUBLIC_POST_ENDPOINTS = {
+            "/users",
+            "/auth/token",
+            "/auth/introspect",
+            "/auth/logout",
+            "/auth/refresh"
+    };
+
+    @NonFinal
+    private static final String[] SWAGGER_ENDPOINTS = {
+            "/v3/api-docs/**",
+            "/v3/api-docs.yaml",
+            "/swagger-ui/**",
+            "/swagger-ui.html"
     };
 
     @Bean
@@ -49,7 +61,9 @@ public class SecurityConfig {
                                                 new JwtAuthenticationEntryPoint()))
                 .authorizeHttpRequests(
                         request ->
-                                request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS)
+                                request.requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS)
+                                        .permitAll()
+                                        .requestMatchers(SWAGGER_ENDPOINTS)
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated());

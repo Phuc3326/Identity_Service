@@ -20,7 +20,7 @@ public class UtilConfig {
     }
 
     @Bean
-    NimbusJwtDecoder jwtDecoder() {
+    NimbusJwtDecoder nimbusJwtDecoder() {
         SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
         //        Turn off the Clock Skew mechanism by setting the grace period to ZERO
         //        OAuth2TokenValidator<Jwt> jwtValidator = new JwtTimestampValidator(Duration.ZERO);
