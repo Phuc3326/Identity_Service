@@ -17,6 +17,10 @@ import java.util.Set;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.Authentication;
@@ -24,6 +28,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -55,8 +60,10 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
+    @Cacheable(value = "users", key = "#id")
     @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse getUser(String id) {
+        log.info("Querying SQL...");
         User user =
                 userRepository
                         .findById(id)
@@ -78,6 +85,7 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
+    @CachePut(value = "users", key = "#id")
     public UserResponse updateUser(String id, UserUpdateRequest request) {
         User user =
                 userRepository
@@ -92,6 +100,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(updatedUser));
     }
 
+    @CacheEvict(value = "users", key = "#id")
     public void deleteUser(String id) {
         userRepository.deleteById(id);
     }

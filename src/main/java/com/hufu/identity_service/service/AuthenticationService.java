@@ -18,6 +18,7 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import java.text.ParseException;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -28,6 +29,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -40,6 +42,7 @@ public class AuthenticationService {
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
     InvalidatedTokenRepository invalidatedTokenRepository;
+    StringRedisTemplate redisTemplate;
 
     @NonFinal
     @Value("${jwt.signerKey}")
@@ -152,17 +155,25 @@ public class AuthenticationService {
             return;
         }
 
-        if (isLoggedOut(signedJWT.getJWTClaimsSet().getJWTID())) {
+        String tokenId = signedJWT.getJWTClaimsSet().getJWTID();
+        if (isLoggedOut(tokenId)) {
             return;
         }
 
-        InvalidatedToken invalidatedToken =
-                InvalidatedToken.builder()
-                        .id(signedJWT.getJWTClaimsSet().getJWTID())
-                        .expiry(refreshExpiration)
-                        .build();
+//        InvalidatedToken invalidatedToken =
+//                InvalidatedToken.builder()
+//                        .id(tokenId)
+//                        .expiry(refreshExpiration)
+//                        .build();
+//
+//        invalidatedTokenRepository.save(invalidatedToken);
 
-        invalidatedTokenRepository.save(invalidatedToken);
+        long remainingSeconds = (refreshExpiration.getTime() - System.currentTimeMillis()) / 1000;
+        redisTemplate.opsForValue().set(
+                "blacklist:" + tokenId,
+                "LOGOUT",
+                Duration.ofSeconds(remainingSeconds)
+        );
     }
 
     public AuthenticationResponse refreshToken(RefreshRequest request)
@@ -216,6 +227,6 @@ public class AuthenticationService {
     }
 
     public boolean isLoggedOut(String id) {
-        return invalidatedTokenRepository.existsById(id);
+        return Boolean.TRUE.equals(redisTemplate.hasKey("blacklist:" + id));
     }
 }
